@@ -21,15 +21,12 @@
 			* Retrieve via `{% getBundle "js" %}` or `{% getBundleFileUrl "js" %}`
 		3. Learn more: https://github.com/11ty/eleventy-plugin-bundle
 		#}
-        {%- css %}@import "/style/London/assets/built/screen.css"; {% endcss %}
-        {%- js %}{% include "../../style/London/assets/built/main.min.js" %}{% endjs %}
         {%- js %}{% include "public/js/main.js" %}{% endjs %}
-        {# <link rel="stylesheet" href="/style/London/assets/built/screen.css"> #}
-        {# {%- css %}{% include "public/style/London/assets/built/screen.css" %}{% endcss %} #}
+        <link rel="stylesheet" href="/assets/built/screen.css">
         {%- css %}{% include "public/css/index.css" %}{% endcss %}
-        {# <style>
+        <style>
             {% getBundle "css" %}
-        </style> #}
+        </style>
         <link rel="stylesheet" type="text/css" href="{% getBundleFileUrl "css" %}" />
     </head>
     <body class="is-head-left-logo is-dropdown-loaded">
@@ -118,7 +115,7 @@
                 </div>
             </div>
         </div>
-
-        <script src="{% getBundleFileUrl "js" %}"></script>
+        <script src="/assets/built/main.min.js" type="application/javascript"></script>
+        <script src="{% getBundleFileUrl "js" %}" type="module" type="application/javascript"></script>
     </body>
 </html>

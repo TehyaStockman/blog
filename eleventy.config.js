@@ -127,14 +127,14 @@ export default async function(eleventyConfig) {
 			},
 			resolve: {
 				alias: {
-					"/node_modules": path.resolve(".", "node_modules"),
-					"/style": path.resolve(".", "style"),
+					"/node_modules": path.resolve(".", "node_modules")
 				}
 			}
 		}
 	});
 
 	eleventyConfig.addPassthroughCopy("img");
+	eleventyConfig.addPassthroughCopy({"style/London/assets": "assets"})
 
 	eleventyConfig.addPairedShortcode("gallery", function(content, caption = "") {
 		var figure_classes = "kg-card kg-gallery-card kg-width-wide";
