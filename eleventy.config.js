@@ -134,7 +134,6 @@ export default async function(eleventyConfig) {
 		}
 	});
 
-    // eleventyConfig.addPassthroughCopy("style/London/");
 	eleventyConfig.addPassthroughCopy("img");
 
 	eleventyConfig.addPairedShortcode("gallery", function(content, caption = "") {
