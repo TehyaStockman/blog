@@ -1,11 +1,12 @@
 export default {
 	title: "Toby's Blog",
-	url: "https://example.com/",
+	url: "https://shapins.ky/",
 	language: "en",
 	description: "I am writing about my experiences as a naval navel-gazer.",
 	author: {
 		name: "Tobias shapinsky",
-		email: "youremailaddress@example.com",
-		url: "https://example.com/about-me/"
-	}
+		email: "tobias@shapins.ky",
+		url: "https://shapins.ky/about/"
+	},
+	copyright: `shapins.ky © ${new Date().getFullYear()}`
 }
