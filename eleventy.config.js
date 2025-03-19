@@ -119,22 +119,22 @@ export default async function(eleventyConfig) {
 
 	// eleventyConfig.setServerPassthroughCopyBehavior("passthrough");
 
-    eleventyConfig.addPlugin(EleventyVitePlugin, {
-		viteOptions: {
-			build: {
-				minify: 'terser',
-				cssMinify: 'esbuild'
-			},
-			resolve: {
-				alias: {
-					"/node_modules": path.resolve(".", "node_modules")
-				}
-			}
-		}
-	});
+    eleventyConfig.addPlugin(EleventyVitePlugin); //, {
+	// 	viteOptions: {
+	// 		build: {
+	// 			minify: 'terser',
+	// 			cssMinify: 'esbuild'
+	// 		},
+	// 		resolve: {
+	// 			alias: {
+	// 				"/node_modules": path.resolve(".", "node_modules")
+	// 			}
+	// 		}
+	// 	}
+	// });
 
-	eleventyConfig.addPassthroughCopy("img");
-	eleventyConfig.addPassthroughCopy({"style/London/assets": "assets"})
+	// eleventyConfig.addPassthroughCopy("img");
+	// eleventyConfig.addPassthroughCopy({"style/London/assets": "style"})
 
 	eleventyConfig.addPairedShortcode("gallery", function(content, caption = "") {
 		var figure_classes = "kg-card kg-gallery-card kg-width-wide";
@@ -152,15 +152,18 @@ export default async function(eleventyConfig) {
 	});
 
 	eleventyConfig.addPairedShortcode("galleryRow", function(content) {
+		console.log("Gallery Row");
 		return `<div class="kg-gallery-row">
 		${content}
 		</div>`;
 	});
 
 	eleventyConfig.addAsyncShortcode("galleryImage", async function(imagePath, alt="") {
+		console.log("Gallery Image")
 		var metadata = await image(path.join(path.dirname(this.page.inputPath), imagePath), {
 			formats: ["avif", "webp", "jpeg"],
-			widths: ["auto", "600", "1000"]
+			widths: ["auto", "600", "1000"],
+			outputDir: "./_site/img"
 		});
 		let imageAttributes = {
 			alt,
@@ -185,6 +188,7 @@ export default async function(eleventyConfig) {
 		var metadata = await image(path.join(path.dirname(this.page.inputPath), imagePath), {
 			widths: ["300", "600", "1200", "auto"],
 			formats: ["avif", "webp", "auto"],
+			outputDir: "./_site/img"
 		});
 		let imageAttributes = {
 			alt,

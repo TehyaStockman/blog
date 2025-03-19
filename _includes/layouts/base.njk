@@ -21,12 +21,8 @@
 			* Retrieve via `{% getBundle "js" %}` or `{% getBundleFileUrl "js" %}`
 		3. Learn more: https://github.com/11ty/eleventy-plugin-bundle
 		#}
-        {%- js %}{% include "public/js/main.js" %}{% endjs %}
-        <link rel="stylesheet" href="/assets/built/screen.css">
+        <link rel="stylesheet" href="/css/screen.css">
         {%- css %}{% include "public/css/index.css" %}{% endcss %}
-        <style>
-            {% getBundle "css" %}
-        </style>
         <link rel="stylesheet" type="text/css" href="{% getBundleFileUrl "css" %}" />
     </head>
     <body class="is-head-left-logo is-dropdown-loaded">
@@ -71,8 +67,6 @@
                 </div>
             </footer>
 
-            <!-- This page `{{ page.url }}` was built on {% currentBuildDate %} -->
-            <script type="module" src="{% getBundleFileUrl "js" %}"></script>
         </div>
         <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="pswp__bg"></div>
@@ -115,7 +109,9 @@
                 </div>
             </div>
         </div>
-        <script src="/assets/built/main.min.js" type="application/javascript"></script>
+        <script src="/js/main.min.js"></script>
+        {%- js %}{% include "public/js/index.js" %}{% endjs %}
         <script src="{% getBundleFileUrl "js" %}" type="module" type="application/javascript"></script>
+        <!-- This page `{{ page.url }}` was built on {% currentBuildDate %} -->
     </body>
 </html>
