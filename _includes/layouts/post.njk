@@ -1,0 +1,20 @@
+---
+layout: layouts/base.njk
+---
+<article class="post-content post">
+    <header class="post-content-header gh-canvas">
+        <h1 class="post-content-title">{{ title }}</h1>
+        {% if featuredImage %}
+        <figure class="post-content-image kg-width-wide">
+            {# <img class="kg-image" src="{{ featuredImage }}" alt="{{ featuredImageCaption }}"> #}
+            {% postImage featuredImage, title %}
+            <figcaption>
+                <span style="white-space: pre-wrap;">{{ featuredImageCaption }}</span>
+            </figcaption>
+        </figure>
+        {% endif %}
+    </header>
+    <div class="post-content-body gh-content gh-canvas">
+        {{ content | safe}}
+    </div>
+</article>

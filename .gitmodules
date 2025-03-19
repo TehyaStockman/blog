@@ -1,0 +1,3 @@
+[submodule "style/London"]
+	path = style/London
+	url = git@github.com:TryGhost/London.git
