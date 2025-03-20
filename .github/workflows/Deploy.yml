@@ -11,10 +11,10 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v4
-      # - name: Install depedencies
-      #   run: npm install
-      # - name: Build site
-      #   run: npx @11ty/eleventy
+      - name: Install depedencies
+        run: npm install
+      - name: Build site
+        run: npx @11ty/eleventy
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
