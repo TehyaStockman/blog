@@ -16,6 +16,8 @@
     "@11ty/eleventy-navigation": "^0.3.5",
     "@11ty/eleventy-plugin-rss": "^2.0.3",
     "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
+    "@sardine/eleventy-plugin-tinycss": "^2.0.0",
+    "@sardine/eleventy-plugin-tinyhtml": "^0.2.0",
     "@tryghost/shared-theme-assets": "^2.5.0",
     "cheerio": "^1.0.0",
     "critical": "^7.2.1",

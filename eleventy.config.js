@@ -8,7 +8,6 @@ import * as cheerio from 'cheerio';
 
 import pluginFilters from "./_config/filters.js";
 import image from "@11ty/eleventy-img";
-import createImage from "@11ty/eleventy-img";
 import path from "path";
 
 import * as fs from "fs";
@@ -18,6 +17,9 @@ import cssnano from 'cssnano';
 import defaultPreset from "cssnano-preset-default";
 import { generate } from "critical";
 import { minify } from "html-minifier-terser";
+
+import tinyCSS from '@sardine/eleventy-plugin-tinycss';
+import tinyHTML from '@sardine/eleventy-plugin-tinyhtml';
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function(eleventyConfig) {
@@ -57,8 +59,6 @@ export default async function(eleventyConfig) {
 		preAttributes: { tabindex: 0 }
 	});
 	eleventyConfig.addPlugin(pluginNavigation);
-	eleventyConfig.addPlugin(HtmlBasePlugin);
-	eleventyConfig.addPlugin(InputPathToUrlTransformPlugin);
 
 	eleventyConfig.addPlugin(feedPlugin, {
 		type: "atom", // or "rss", "json"
@@ -86,32 +86,32 @@ export default async function(eleventyConfig) {
 	});
 
 	// Image optimization: https://www.11ty.dev/docs/plugins/image/#eleventy-transform
-	eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
-		// Output formats for each image.
-		formats: ["avif", "webp", "auto"],
+	// eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
+	// 	// Output formats for each image.
+	// 	formats: ["avif", "webp", "auto"],
 
-		widths: ["auto"],
+	// 	widths: ["auto"],
 
-		failOnError: false,
-		htmlOptions: {
-			imgAttributes: {
-				// e.g. <img loading decoding> assigned on the HTML tag will override these values.
-				loading: "lazy",
-				decoding: "async",
-			}
-		},
-		useCache: true,
-		cacheOptions: {
-			directory: ".cache"
-		},
+	// 	failOnError: false,
+	// 	htmlOptions: {
+	// 		imgAttributes: {
+	// 			// e.g. <img loading decoding> assigned on the HTML tag will override these values.
+	// 			loading: "lazy",
+	// 			decoding: "async",
+	// 		}
+	// 	},
+	// 	useCache: true,
+	// 	cacheOptions: {
+	// 		directory: ".cache"
+	// 	},
 
-		sharpOptions: {
-			animated: true,
-		},
-	});
+	// 	sharpOptions: {
+	// 		animated: true,
+	// 	},
+	// });
 
 	// Filters
-	eleventyConfig.addPlugin(pluginFilters);
+	// eleventyConfig.addPlugin(pluginFilters);
 
 	eleventyConfig.addPlugin(IdAttributePlugin, {
 		// by default we use Eleventy’s built-in `slugify` filter:
@@ -145,6 +145,14 @@ export default async function(eleventyConfig) {
 	// 	}
 	// });
 
+	// eleventyConfig.addPlugin(tinyCSS, {
+	// 	purgeCSS: {
+	// 		rejectedCss: true
+	// 	}
+	// });
+
+	eleventyConfig.addPlugin(tinyHTML);
+
 	eleventyConfig.addPairedShortcode("gallery", function(content, caption = "") {
 		var figure_classes = "kg-card kg-gallery-card kg-width-wide";
 		var figcaption = "";
@@ -162,37 +170,64 @@ export default async function(eleventyConfig) {
 
 	eleventyConfig.addPairedShortcode("galleryRow", function(content) {
 		console.log("Gallery Row");
+		const $ = cheerio.load(content, null, false);
+		const gallery_images = $("div.kg-gallery-image");
+		var totalAspect = 0;
+		var images = [];
+		gallery_images.each(function() {
+			const style = $(this).attr("style");
+			// console.log($(this).html());
+			const flexMatch = style?.match(/flex:\s*([0-9\.]+)/);
+			if(flexMatch) {
+				const aspectRatio = parseFloat(flexMatch[1])
+				totalAspect += aspectRatio;
+				images.push({
+					element: this,
+					aspectRatio: aspectRatio});
+			}
+		});
+		
+		images.forEach(function (image) {
+			const aspectRatio = image.aspectRatio;
+			const widthRatio = aspectRatio / totalAspect;
+			const sizes = `auto, (min-width: 1380px) calc((1200px - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio}), (min-width: 850) calc((94vw - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio}), calc((88vw - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio})`
+			$(image.element).find('img, source').attr('sizes', sizes);
+		});
+		console.log($.html());
+
 		return `<div class="kg-gallery-row">
-		${content}
+		${$.html()}
 		</div>`;
 	});
 
 	eleventyConfig.addAsyncShortcode("galleryImage", async function(imagePath, alt="") {
-		console.log(`Gallery Image: ${imagePath}`);
 		imagePath = path.join(path.dirname(this.page.inputPath), imagePath);
-		var metadata = await image(imagePath, {
+		const metadata = await image(imagePath, {
 			formats: ["avif", "webp", "jpeg"],
-			widths: ["auto", "300", "600", "900"],
+			widths: ["auto","150", "300", "600", "900"],
 			outputDir: "./_site/img",
 			useCache: true,
 			cacheOptions: {
 				directory: ".cache"
 			}
 		});
-		let imageAttributes = {
+		const imageAttributes = {
 			alt,
-			sizes: "(max-width: 720px) 720px",
 			loading: "lazy",
 			decoding: "async",
-			"eleventy:ignore": true,
-			fallback: "largest"
+			// "eleventy:ignore": true,
+			// fallback: "largest"
 		}
-		let largestImage = metadata.jpeg[metadata.jpeg.length - 1];
+		const generatedImageHTML = image.generateHTML(metadata, imageAttributes);
+		const $ = cheerio.load(generatedImageHTML, null, false);
+		const imgElement = $('img');
+		const imgSrc = imgElement.attr('src');
+		const extension = imgSrc.match(/\.([a-zA-Z0-9]+)$/)[1];
+		
+		let largestImage = metadata[extension][metadata[extension].length - 1];
 
 		let aspectRatio = largestImage.width / largestImage.height;
-		var image_element = image.generateHTML(metadata, imageAttributes);
-		const $ = cheerio.load(image_element);
-		$("img").attr("src", largestImage.url);
+		imgElement.attr("src", largestImage.url);
 		return `<div class="kg-gallery-image" style="flex: ${aspectRatio} 1 0%;">
 		${$.html()}</div>`;
 	});
@@ -213,7 +248,7 @@ export default async function(eleventyConfig) {
 			sizes: "(min-width: 1380px) 1200px, (min-width: 980px) calc(73.42vw + 201px), 88.03vw",
 			decoding: "async",
 			class:"kg-image",
-			"eleventy:ignore": true
+			// "eleventy:ignore": true
 		};
 		return image.generateHTML(metadata, imageAttributes);
 	});
@@ -251,13 +286,14 @@ export default async function(eleventyConfig) {
 	});
 
 	eleventyConfig.addTransform("critical-css", async function(content) {
+		process.setMaxListeners(20);
 		if(this.page.outputFileExtension != "html") {
 			return content;
 		}
 		const result = await generate({
 			base: "_site/",
 			html: content,
-			assetPaths: ["_site/"],
+			assetPaths: ["_site/", "public/"],
 			inline: true,
 			dimensions: [
 				{
