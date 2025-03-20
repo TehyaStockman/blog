@@ -4,12 +4,11 @@ layout: layouts/base.njk
 <article class="post-content post">
     <header class="post-content-header gh-canvas">
         <h1 class="post-content-title">{{ title }}</h1>
-        {% if featuredImage %}
+        {% if featureImage %}
         <figure class="post-content-image kg-width-wide">
-            {# <img class="kg-image" src="{{ featuredImage }}" alt="{{ featuredImageCaption }}"> #}
-            {% postImage featuredImage, title %}
+            {% postImage page, featureImage, title %}
             <figcaption>
-                <span style="white-space: pre-wrap;">{{ featuredImageCaption }}</span>
+                <span style="white-space: pre-wrap;">{{ featureImageCaption }}</span>
             </figcaption>
         </figure>
         {% endif %}
