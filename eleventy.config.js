@@ -17,6 +17,7 @@ import atImport from "postcss-import";
 import cssnano from 'cssnano';
 import defaultPreset from "cssnano-preset-default";
 import { generate } from "critical";
+import { minify } from "html-minifier-terser";
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function(eleventyConfig) {
@@ -99,6 +100,10 @@ export default async function(eleventyConfig) {
 				decoding: "async",
 			}
 		},
+		useCache: true,
+		cacheOptions: {
+			directory: ".cache"
+		},
 
 		sharpOptions: {
 			animated: true,
@@ -126,7 +131,7 @@ export default async function(eleventyConfig) {
 
 	// eleventyConfig.setServerPassthroughCopyBehavior("passthrough");
 
-    eleventyConfig.addPlugin(EleventyVitePlugin); //, {
+    // eleventyConfig.addPlugin(EleventyVitePlugin); //, {
 	// 	viteOptions: {
 	// 		build: {
 	// 			minify: 'terser',
@@ -167,9 +172,12 @@ export default async function(eleventyConfig) {
 		imagePath = path.join(path.dirname(this.page.inputPath), imagePath);
 		var metadata = await image(imagePath, {
 			formats: ["avif", "webp", "jpeg"],
-			widths: ["auto", "600", "1000"],
+			widths: ["auto", "300", "600", "900"],
 			outputDir: "./_site/img",
-			useCache: true
+			useCache: true,
+			cacheOptions: {
+				directory: ".cache"
+			}
 		});
 		let imageAttributes = {
 			alt,
@@ -192,14 +200,17 @@ export default async function(eleventyConfig) {
 	eleventyConfig.addAsyncShortcode("postImage", async function(page, imagePath, alt) {
 		imagePath = path.join(path.dirname(page.inputPath), imagePath);
 		var metadata = await image(imagePath, {
-			widths: ["300", "600", "1200", "auto"],
+			widths: ["300", "600", "900", "1200", "auto"],
 			formats: ["avif", "webp", "auto"],
 			outputDir: "./_site/img",
-			useCache: true
+			useCache: true,
+			cacheOptions: {
+				directory: ".cache"
+			}
 		});
 		let imageAttributes = {
 			alt,
-			sizes: "(min-width: 961px) 75vw, 88vw",
+			sizes: "(min-width: 1380px) 1200px, (min-width: 980px) calc(73.42vw + 201px), 88.03vw",
 			decoding: "async",
 			class:"kg-image",
 			"eleventy:ignore": true
@@ -209,6 +220,8 @@ export default async function(eleventyConfig) {
 
 	eleventyConfig.on("eleventy.before", async({}) => {
 		const css = fs.readFileSync("style/main.css", "utf8");
+		const css_dest = path.join("public", "css", "main.css");
+		const css_map = `${css_dest}.map`
 		postcss([cssnano({preset: defaultPreset()})])
 			.use(atImport({
 				path: ["./node_modules",
@@ -220,8 +233,20 @@ export default async function(eleventyConfig) {
 				to: "css/main.css",
 				"map": { inline: false }
 			}).then((result) => {
-				fs.writeFileSync('public/css/main.css', result.css);
-				fs.writeFileSync('public/css/main.css.map', result.map.toString());
+				if (fs.existsSync(css_dest)) {
+					const current_contents = fs.readFileSync(css_dest);
+					if(current_contents != result.css) {
+						console.log("changed css");
+						fs.writeFileSync(css_dest, result.css);
+					}
+				}
+				if (fs.existsSync(css_map)) {
+					const current_contents = fs.readFileSync(css_map);
+					if(current_contents != result.map.toString()) {
+						console.log("changed map");
+						fs.writeFileSync(css_map, result.map.toString());
+					}
+				}
 			});
 	});
 
@@ -249,7 +274,7 @@ export default async function(eleventyConfig) {
 				}
 			]
 		});
-		return result.html;
+		return minify(result.html);
 	});
 };
 

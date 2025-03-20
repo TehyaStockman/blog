@@ -16,10 +16,12 @@
     "@11ty/eleventy-navigation": "^0.3.5",
     "@11ty/eleventy-plugin-rss": "^2.0.3",
     "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
+    "@tryghost/shared-theme-assets": "^2.5.0",
     "cheerio": "^1.0.0",
     "critical": "^7.2.1",
     "cssnano": "^7.0.6",
     "cssnano-preset-default": "^7.0.6",
+    "html-minifier-terser": "^7.2.0",
     "serve": "^14.2.4"
   },
   "devDependencies": {
