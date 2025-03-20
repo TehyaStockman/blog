@@ -11,6 +11,13 @@ import image from "@11ty/eleventy-img";
 import createImage from "@11ty/eleventy-img";
 import path from "path";
 
+import * as fs from "fs";
+import postcss from "postcss";
+import atImport from "postcss-import";
+import cssnano from 'cssnano';
+import defaultPreset from "cssnano-preset-default";
+import { generate } from "critical";
+
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default async function(eleventyConfig) {
 	// Drafts, see also _data/eleventyDataSchema.js
@@ -163,7 +170,8 @@ export default async function(eleventyConfig) {
 		var metadata = await image(path.join(path.dirname(this.page.inputPath), imagePath), {
 			formats: ["avif", "webp", "jpeg"],
 			widths: ["auto", "600", "1000"],
-			outputDir: "./_site/img"
+			outputDir: "./_site/img",
+			useCache: true
 		});
 		let imageAttributes = {
 			alt,
@@ -175,7 +183,6 @@ export default async function(eleventyConfig) {
 		}
 		let largestImage = metadata.jpeg[metadata.jpeg.length - 1];
 
-		// console.log(metadata);
 		let aspectRatio = largestImage.width / largestImage.height;
 		var image_element = image.generateHTML(metadata, imageAttributes);
 		const $ = cheerio.load(image_element);
@@ -188,7 +195,8 @@ export default async function(eleventyConfig) {
 		var metadata = await image(path.join(path.dirname(this.page.inputPath), imagePath), {
 			widths: ["300", "600", "1200", "auto"],
 			formats: ["avif", "webp", "auto"],
-			outputDir: "./_site/img"
+			outputDir: "./_site/img",
+			useCache: true
 		});
 		let imageAttributes = {
 			alt,
@@ -198,6 +206,51 @@ export default async function(eleventyConfig) {
 			"eleventy:ignore": true
 		};
 		return image.generateHTML(metadata, imageAttributes);
+	});
+
+	eleventyConfig.on("eleventy.before", async({}) => {
+		const css = fs.readFileSync("style/main.css", "utf8");
+		postcss([cssnano({preset: defaultPreset()})])
+			.use(atImport({
+				path: ["./node_modules",
+					"./style"
+				]
+			}))
+			.process(css, {
+				from: "style/main.css",
+				to: "css/main.css",
+				"map": { inline: false }
+			}).then((result) => {
+				fs.writeFileSync('public/css/main.css', result.css);
+				fs.writeFileSync('public/css/main.css.map', result.map.toString());
+			});
+	});
+
+	eleventyConfig.addTransform("critical-css", async function(content) {
+		if(this.page.outputFileExtension != "html") {
+			return content;
+		}
+		const result = await generate({
+			base: "_site/",
+			html: content,
+			assetPaths: ["_site/"],
+			inline: true,
+			dimensions: [
+				{
+					width: 360,
+					height: 800
+				},
+				{
+					width: 900,
+					height: 500
+				},
+				{
+					width: 1300,
+					height: 900
+				}
+			]
+		});
+		return result.html;
 	});
 };
 
