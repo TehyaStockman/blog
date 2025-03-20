@@ -1,8 +1,7 @@
-import { IdAttributePlugin, InputPathToUrlTransformPlugin, HtmlBasePlugin } from "@11ty/eleventy";
+import { IdAttributePlugin } from "@11ty/eleventy";
 import { feedPlugin } from "@11ty/eleventy-plugin-rss";
 import pluginSyntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 import pluginNavigation from "@11ty/eleventy-navigation";
-import { eleventyImageTransformPlugin } from "@11ty/eleventy-img";
 import EleventyVitePlugin from "@11ty/eleventy-plugin-vite";
 import * as cheerio from 'cheerio';
 
@@ -16,9 +15,6 @@ import atImport from "postcss-import";
 import cssnano from 'cssnano';
 import defaultPreset from "cssnano-preset-default";
 import { generate } from "critical";
-import { minify } from "html-minifier-terser";
-
-import tinyCSS from '@sardine/eleventy-plugin-tinycss';
 import tinyHTML from '@sardine/eleventy-plugin-tinyhtml';
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
@@ -85,71 +81,21 @@ export default async function(eleventyConfig) {
 		}
 	});
 
-	// Image optimization: https://www.11ty.dev/docs/plugins/image/#eleventy-transform
-	// eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
-	// 	// Output formats for each image.
-	// 	formats: ["avif", "webp", "auto"],
-
-	// 	widths: ["auto"],
-
-	// 	failOnError: false,
-	// 	htmlOptions: {
-	// 		imgAttributes: {
-	// 			// e.g. <img loading decoding> assigned on the HTML tag will override these values.
-	// 			loading: "lazy",
-	// 			decoding: "async",
-	// 		}
-	// 	},
-	// 	useCache: true,
-	// 	cacheOptions: {
-	// 		directory: ".cache"
-	// 	},
-
-	// 	sharpOptions: {
-	// 		animated: true,
-	// 	},
-	// });
-
 	// Filters
-	// eleventyConfig.addPlugin(pluginFilters);
+	eleventyConfig.addPlugin(pluginFilters);
 
 	eleventyConfig.addPlugin(IdAttributePlugin, {
 		// by default we use Eleventy’s built-in `slugify` filter:
-		// slugify: eleventyConfig.getFilter("slugify"),
-		// selector: "h1,h2,h3,h4,h5,h6", // default
+		slugify: eleventyConfig.getFilter("slugify"),
+		selector: "h1,h2,h3,h4,h5,h6", // default
 	});
 
 	eleventyConfig.addShortcode("currentBuildDate", () => {
 		return (new Date()).toISOString();
 	});
 
-	// Features to make your build faster (when you need them)
 
-	// If your passthrough copy gets heavy and cumbersome, add this line
-	// to emulate the file copy on the dev server. Learn more:
-	// https://www.11ty.dev/docs/copy/#emulate-passthrough-copy-during-serve
-
-	// eleventyConfig.setServerPassthroughCopyBehavior("passthrough");
-
-    eleventyConfig.addPlugin(EleventyVitePlugin); //, {
-	// 	viteOptions: {
-	// 		build: {
-	// 			minify: 'terser',
-	// 			cssMinify: 'esbuild'
-	// 		},
-	// 		resolve: {
-	// 			alias: {
-	// 				"/node_modules": path.resolve(".", "node_modules")
-	// 			}
-	// 		}
-	// 	}
-	// });
-
-	// eleventyConfig.addPlugin(tinyCSS, {
-	// 	purgeCSS: {
-	// 		rejectedCss: true
-	// 	}
-	// });
+    eleventyConfig.addPlugin(EleventyVitePlugin);
 
 	eleventyConfig.addPlugin(tinyHTML);
 
@@ -213,8 +159,6 @@ export default async function(eleventyConfig) {
 			alt,
 			loading: "lazy",
 			decoding: "async",
-			// "eleventy:ignore": true,
-			// fallback: "largest"
 		}
 		const generatedImageHTML = image.generateHTML(metadata, imageAttributes);
 		const $ = cheerio.load(generatedImageHTML, null, false);
@@ -231,6 +175,7 @@ export default async function(eleventyConfig) {
 	});
 
 	eleventyConfig.addAsyncShortcode("postImage", async function(page, imagePath, alt) {
+		const isFeature = page == this.page;
 		imagePath = path.join(path.dirname(page.inputPath), imagePath);
 		var metadata = await image(imagePath, {
 			widths: ["300", "600", "900", "1200", "auto"],
@@ -246,12 +191,15 @@ export default async function(eleventyConfig) {
 			sizes: "(min-width: 1380px) 1200px, (min-width: 980px) calc(73.42vw + 201px), 88.03vw",
 			decoding: "async",
 			class:"kg-image",
-			// "eleventy:ignore": true
 		};
+		if (!isFeature) {
+			imageAttributes["loading"] = "lazy";
+			imageAttributes["sizes"]  = "auto";
+		}
 		return image.generateHTML(metadata, imageAttributes);
 	});
 
-	eleventyConfig.on("eleventy.before", async({}) => {
+	eleventyConfig.on("eleventy.before", ({}) => {
 		const css = fs.readFileSync("style/main.css", "utf8");
 		const css_dest = path.join("public", "css", "main.css");
 		const css_map = `${css_dest}.map`
@@ -308,7 +256,7 @@ export default async function(eleventyConfig) {
 				}
 			]
 		});
-		return minify(result.html);
+		return result.html;
 	});
 };
 

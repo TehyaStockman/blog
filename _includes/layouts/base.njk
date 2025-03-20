@@ -8,6 +8,7 @@
         <meta property="og:title" content="{{ title or metadata.title }}">
         <meta property="og:type" content="website">
         <link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="{{ metadata.title }}">
+        <link rel="icon" href="/images/favicon.png" type="image/png">
         {#- Uncomment this if you’d like folks to know that you used Eleventy to build your site!  #}
         {#- <meta name="generator" content="{{ eleventy.generator }}"> #}
 
@@ -22,12 +23,10 @@
 		3. Learn more: https://github.com/11ty/eleventy-plugin-bundle
 		#}
         <link rel="stylesheet" href="/css/main.css">
-        {%- css %}{% include "public/css/index.css" %}{% endcss %}
-        <link rel="stylesheet" type="text/css" href="{% getBundleFileUrl "css" %}" />
     </head>
     <body class="is-head-left-logo is-dropdown-loaded">
         <div class="site-wrapper">
-            <a href="#skip" class="visually-hidden">Skip to main content</a>
+            <a href="#skip" class="hidden">Skip to main content</a>
 
             <header id="gh-head" class="gh-head gh-outer">
                 <div class="gh-head-inner gh-inner">
@@ -40,7 +39,7 @@
 
                     {#- Read more about `eleventy-navigation` at https://www.11ty.dev/docs/plugins/navigation/ #}
                     <nav class="gh-head-menu">
-                        <h2 class="visually-hidden">Top level navigation menu</h2>
+                        <h2 class="hidden">Top level navigation menu</h2>
                         <ul class="nav">
                             {%- for entry in collections.all | eleventyNavigation %}
                                 <li class="nav-{{ entry.title | lower }}">

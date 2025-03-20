@@ -1,3 +1,7 @@
 [submodule "style/London"]
 	path = style/London
 	url = git@github.com:TryGhost/London.git
+[submodule "style/Ghost"]
+	path = style/Ghost
+	url = git@github.com:TryGhost/Ghost.git
+	branch = tags/v5.113.1
