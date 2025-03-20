@@ -131,7 +131,7 @@ export default async function(eleventyConfig) {
 
 	// eleventyConfig.setServerPassthroughCopyBehavior("passthrough");
 
-    // eleventyConfig.addPlugin(EleventyVitePlugin); //, {
+    eleventyConfig.addPlugin(EleventyVitePlugin); //, {
 	// 	viteOptions: {
 	// 		build: {
 	// 			minify: 'terser',
@@ -176,7 +176,6 @@ export default async function(eleventyConfig) {
 		var images = [];
 		gallery_images.each(function() {
 			const style = $(this).attr("style");
-			// console.log($(this).html());
 			const flexMatch = style?.match(/flex:\s*([0-9\.]+)/);
 			if(flexMatch) {
 				const aspectRatio = parseFloat(flexMatch[1])
@@ -193,7 +192,6 @@ export default async function(eleventyConfig) {
 			const sizes = `auto, (min-width: 1380px) calc((1200px - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio}), (min-width: 850) calc((94vw - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio}), calc((88vw - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio})`
 			$(image.element).find('img, source').attr('sizes', sizes);
 		});
-		console.log($.html());
 
 		return `<div class="kg-gallery-row">
 		${$.html()}
