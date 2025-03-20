@@ -70,16 +70,16 @@ export default async function(eleventyConfig) {
 			}
 		},
 		collection: {
-			name: "posts",
+			name: "post",
 			limit: 10,
 		},
 		metadata: {
 			language: "en",
-			title: "Blog Title",
+			title: "Toby's Blog",
 			subtitle: "This is a longer description about your blog.",
-			base: "https://example.com/",
+			base: "https://shapins.ky/",
 			author: {
-				name: "Your Name"
+				name: "Tobias Shapinsky"
 			}
 		}
 	});
@@ -140,9 +140,6 @@ export default async function(eleventyConfig) {
 	// 	}
 	// });
 
-	// eleventyConfig.addPassthroughCopy("img");
-	// eleventyConfig.addPassthroughCopy({"style/London/assets": "style"})
-
 	eleventyConfig.addPairedShortcode("gallery", function(content, caption = "") {
 		var figure_classes = "kg-card kg-gallery-card kg-width-wide";
 		var figcaption = "";
@@ -166,8 +163,9 @@ export default async function(eleventyConfig) {
 	});
 
 	eleventyConfig.addAsyncShortcode("galleryImage", async function(imagePath, alt="") {
-		console.log("Gallery Image")
-		var metadata = await image(path.join(path.dirname(this.page.inputPath), imagePath), {
+		console.log(`Gallery Image: ${imagePath}`);
+		imagePath = path.join(path.dirname(this.page.inputPath), imagePath);
+		var metadata = await image(imagePath, {
 			formats: ["avif", "webp", "jpeg"],
 			widths: ["auto", "600", "1000"],
 			outputDir: "./_site/img",
@@ -191,8 +189,9 @@ export default async function(eleventyConfig) {
 		${$.html()}</div>`;
 	});
 
-	eleventyConfig.addAsyncShortcode("postImage", async function(imagePath, alt) {
-		var metadata = await image(path.join(path.dirname(this.page.inputPath), imagePath), {
+	eleventyConfig.addAsyncShortcode("postImage", async function(page, imagePath, alt) {
+		imagePath = path.join(path.dirname(page.inputPath), imagePath);
+		var metadata = await image(imagePath, {
 			widths: ["300", "600", "1200", "auto"],
 			formats: ["avif", "webp", "auto"],
 			outputDir: "./_site/img",

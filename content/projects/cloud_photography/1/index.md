@@ -1,9 +1,10 @@
 ---
 layout: layouts/post.njk
 title: "Cloud Portraits I: Why?"
-date: 2025-03-09
-featuredImage: cloud.jpg
-featuredImageCaption: "Exposure From Initial Tests Shot on a Minolta X-700 with the 70-210 f/4"
+date: 2024-03-09
+tags: ["post", "project:cloud_photography"]
+featureImage: cloud.jpg
+featureImageCaption: "Exposure From Initial Tests Shot on a Minolta X-700 with the 70-210 f/4"
 ---
 
 For a little over a year I have been planning a project consisting of a series of portraits of clouds. Specifically bright, fluffy, detailed clouds on a inky black sky.

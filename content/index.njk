@@ -4,3 +4,6 @@ const eleventyNavigation = {
 	order: 1
 };
 ---
+
+{% set postlist = collections.post %}
+{% include "postlist.njk" %}

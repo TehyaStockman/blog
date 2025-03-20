@@ -1,0 +1,14 @@
+<div class="post-feed gh-feed">
+{%- for post in postlist | reverse %}
+<article class="post-card">
+    <a class="post-card-link" href="{{ post.url }}">
+        {% if post.data.featureImage %}
+            {% postImage post, post.data.featureImage, post.data.title %}
+        {% endif %}
+        <div class="post-card-content">
+            <h2 class="post-card-title">{{ post.data.title }}</h2>
+        </div>
+    </a>
+</article>
+{%- endfor %}
+</div>
