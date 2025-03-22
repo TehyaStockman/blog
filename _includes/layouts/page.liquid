@@ -1,0 +1,21 @@
+---
+layout: layouts/default.liquid
+post_class: "page-template"
+show_title_and_feature_image: true
+---
+<article class="post-content {{post_class}}">
+
+    {%- if show_title_and_feature_image %}
+        <header class="post-content-header gh-canvas">
+            <h1 class="post-content-title">{{title}}</h1>
+            {%- include "partials/feature-image.liquid" %}
+        </header>
+    {%- endif %}
+
+
+    <div class="post-content-body gh-content gh-canvas">
+        {{content}}
+    </div>
+
+</article>
+

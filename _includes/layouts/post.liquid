@@ -1,0 +1,26 @@
+---
+layout: layouts/default.liquid
+post_class: "post-template"
+---
+<article class="post-content {{post_class}}">
+
+    <header class="post-content-header gh-canvas">
+        <h1 class="post-content-title">{{title}}</h1>
+        {%- if custom_excerpt %}
+            <p class="post-content-excerpt">{{custom_excerpt}}</p>
+        {%- endif %}
+        {%- include "partials/feature-image.liquid" %}
+    </header>
+
+
+    <div class="post-content-body gh-content gh-canvas">
+        {{ content }}
+    </div>
+
+    {%- if comments %}
+        <div class="gh-comments gh-canvas">
+            {{comments}}
+        </div>
+    {%- endif %}
+
+</article>

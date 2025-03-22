@@ -1,9 +1,8 @@
 ---
 title: Cloud Photography
-layout: "layouts/list_post.njk"
-postCollection: "project:cloud_photography"
-featureImage: "1/cloud.jpg"
-tags: "project"
+layout: "layouts/project.liquid"
+collection: "project:cloud_photography"
+feature_image: "1/cloud.jpg"
 ---
 
 Lorem Ipsum Delor Sit amet

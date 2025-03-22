@@ -8,5 +8,6 @@ export default {
 		email: "tobias@shapins.ky",
 		url: "https://shapins.ky/about/"
 	},
-	copyright: `shapins.ky © ${new Date().getFullYear()}`
+	copyright: `shapins.ky © ${new Date().getFullYear()}`,
+	favicon: "/images/favicon.png"
 }

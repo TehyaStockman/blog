@@ -1,0 +1,12 @@
+<ul class="nav">
+  {% assign navPages = collections.all | eleventyNavigation %}
+  {%- for entry in navPages %}
+    <li class="nav-{{ entry.title | downcase }}">
+      <a
+        href="{{ entry.url }}"
+        {% if entry.url == page.url %}
+        aria-current="page"
+        {% endif %}>{{ entry.title }}</a>
+    </li>
+  {%- endfor %}
+</ul>

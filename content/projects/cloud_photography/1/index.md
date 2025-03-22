@@ -1,10 +1,11 @@
 ---
-layout: layouts/post.njk
+layout: layouts/post.liquid
 title: "Cloud Portraits I: Why?"
 date: 2024-03-09
 tags: ["post", "project:cloud_photography"]
-featureImage: cloud.jpg
-featureImageCaption: "Exposure From Initial Tests Shot on a Minolta X-700 with the 70-210 f/4"
+feature_image: cloud.jpg
+feature_image_alt: "Film photograph of a white puffy cloud on a dark background"
+feature_image_caption: "Exposure From Initial Tests Shot on a Minolta X-700 with the 70-210 f/4"
 ---
 
 For a little over a year I have been planning a project consisting of a series of portraits of clouds. Specifically bright, fluffy, detailed clouds on a inky black sky.
@@ -19,9 +20,9 @@ Since I left undergrad and started working a 9-5 job I have had fewer of those w
 
 {% gallery "Some of my work from my undergrad (Left to Right: IR Ivy, SEM Bee, UVIVF Kiwi)" %}
 {% galleryRow %}
-{% galleryImage "old_work_gallery/ivy.jpg", "Ivy growing on a brick wall, shot in infrared" %}
-{% galleryImage "old_work_gallery/bee.jpg"%}
-{% galleryImage "old_work_gallery/kiwi.jpg"%}
+!["Ivy growing on a brick wall, shot in infrared"](old_work_gallery/ivy.jpg)
+![bee](old_work_gallery/bee.jpg)
+![kiwi](old_work_gallery/kiwi.jpg)
 {% endgalleryRow %}
 {% endgallery %}
 
@@ -45,8 +46,8 @@ For more information about how filters work you can checkout this [article from 
 
 {% gallery "Black and White Image taken without red filter (left) and with red filter (right)" %}
 {% galleryRow %}
-{% galleryImage "no_red_filter.jpg"%}
-{% galleryImage "red_filter.jpg"%}
+![Image shot with no red filter](no_red_filter.jpg)
+![image shot with a red filter](red_filter.jpg)
 {% endgalleryRow %}
 {% endgallery %}
 
