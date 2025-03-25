@@ -1,0 +1,11 @@
+.page-head {
+    padding: 6vw 0;
+}
+
+.post-content {
+    padding-top: var(--header-spacing);
+}
+
+:root {
+    --header-spacing: min(max(3vw,64px), 128px);
+}

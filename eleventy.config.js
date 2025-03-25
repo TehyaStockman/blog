@@ -3,10 +3,10 @@ import { feedPlugin } from "@11ty/eleventy-plugin-rss";
 import pluginSyntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 import pluginNavigation from "@11ty/eleventy-navigation";
 import EleventyVitePlugin from "@11ty/eleventy-plugin-vite";
+import { eleventyImageTransformPlugin } from "@11ty/eleventy-img";
 import * as cheerio from 'cheerio';
 
 import pluginFilters from "./_config/filters.js";
-import image from "@11ty/eleventy-img";
 import path from "path";
 
 import * as fs from "fs";
@@ -18,10 +18,10 @@ import { generate } from "critical";
 import tinyHTML from '@sardine/eleventy-plugin-tinyhtml';
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
-export default async function(eleventyConfig) {
+export default async function (eleventyConfig) {
 	// Drafts, see also _data/eleventyDataSchema.js
 	eleventyConfig.addPreprocessor("drafts", "*", (data, content) => {
-		if(data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
+		if (data.draft && process.env.ELEVENTY_RUN_MODE === "build") {
 			return false;
 		}
 	});
@@ -55,6 +55,18 @@ export default async function(eleventyConfig) {
 		preAttributes: { tabindex: 0 }
 	});
 	eleventyConfig.addPlugin(pluginNavigation);
+
+	eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
+		outputDir: "_site/img",
+		widths: ["150", "300", "600", "900", "1200", "auto"],
+		formats: ["webp", "avif", "jpeg"],
+		htmlOptions: {
+			imgAttributes: {
+				loading: "lazy",
+				decosing: "async"
+			}
+		}
+	})
 
 	eleventyConfig.addPlugin(feedPlugin, {
 		type: "atom", // or "rss", "json"
@@ -94,12 +106,9 @@ export default async function(eleventyConfig) {
 		return (new Date()).toISOString();
 	});
 
+	eleventyConfig.addShortcode("join", path.join);
 
-    eleventyConfig.addPlugin(EleventyVitePlugin);
-
-	eleventyConfig.addPlugin(tinyHTML);
-
-	eleventyConfig.addPairedShortcode("gallery", function(content, caption = "") {
+	eleventyConfig.addPairedShortcode("gallery", function (content, caption = "") {
 		var figure_classes = "kg-card kg-gallery-card kg-width-wide";
 		var figcaption = "";
 		if (caption != "") {
@@ -114,96 +123,25 @@ export default async function(eleventyConfig) {
 		</figure>`
 	});
 
-	eleventyConfig.addPairedShortcode("galleryRow", function(content) {
-		console.log("Gallery Row");
-		const $ = cheerio.load(content, null, false);
-		const gallery_images = $("div.kg-gallery-image");
-		var totalAspect = 0;
-		var images = [];
-		gallery_images.each(function() {
-			const style = $(this).attr("style");
-			const flexMatch = style?.match(/flex:\s*([0-9\.]+)/);
-			if(flexMatch) {
-				const aspectRatio = parseFloat(flexMatch[1])
-				totalAspect += aspectRatio;
-				images.push({
-					element: this,
-					aspectRatio: aspectRatio});
-			}
-		});
-		
-		images.forEach(function (image) {
-			const aspectRatio = image.aspectRatio;
-			const widthRatio = aspectRatio / totalAspect;
-			const sizes = `auto, (min-width: 1380px) calc((1200px - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio}), (min-width: 850) calc((94vw - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio}), calc((88vw - (1.2rem * ${gallery_images.length - 1})) * ${widthRatio})`
-			$(image.element).find('img, source').attr('sizes', sizes);
-		});
-
+	eleventyConfig.addPairedShortcode("galleryRow", function (content) {
 		return `<div class="kg-gallery-row">
-		${$.html()}
+		${content}
 		</div>`;
 	});
 
-	eleventyConfig.addAsyncShortcode("galleryImage", async function(imagePath, alt="") {
-		imagePath = path.join(path.dirname(this.page.inputPath), imagePath);
-		const metadata = await image(imagePath, {
-			formats: ["avif", "webp", "jpeg"],
-			widths: ["auto","150", "300", "600", "900"],
-			outputDir: "./_site/img",
-			useCache: true,
-			cacheOptions: {
-				directory: ".cache"
-			}
-		});
-		const imageAttributes = {
-			alt,
-			loading: "lazy",
-			decoding: "async",
+	eleventyConfig.addShortcode("relativePath", function (filePath, page=undefined) {
+		if(page === undefined) {
+			page = this.page;
 		}
-		const generatedImageHTML = image.generateHTML(metadata, imageAttributes);
-		const $ = cheerio.load(generatedImageHTML, null, false);
-		const imgElement = $('img');
-		const imgSrc = imgElement.attr('src');
-		const extension = imgSrc.match(/\.([a-zA-Z0-9]+)$/)[1];
-		
-		let largestImage = metadata[extension][metadata[extension].length - 1];
-
-		let aspectRatio = largestImage.width / largestImage.height;
-		imgElement.attr("src", largestImage.url);
-		return `<div class="kg-gallery-image" style="flex: ${aspectRatio} 1 0%;">
-		${$.html()}</div>`;
+		const relativePath = path.join("/", path.relative("content",path.join(path.dirname(page.inputPath), filePath)));
+		return relativePath;
 	});
 
-	eleventyConfig.addAsyncShortcode("postImage", async function(page, imagePath, alt) {
-		const isFeature = page == this.page;
-		imagePath = path.join(path.dirname(page.inputPath), imagePath);
-		var metadata = await image(imagePath, {
-			widths: ["300", "600", "900", "1200", "auto"],
-			formats: ["avif", "webp", "auto"],
-			outputDir: "./_site/img",
-			useCache: true,
-			cacheOptions: {
-				directory: ".cache"
-			}
-		});
-		let imageAttributes = {
-			alt,
-			sizes: "(min-width: 1380px) 1200px, (min-width: 980px) calc(73.42vw + 201px), 88.03vw",
-			decoding: "async",
-			class:"kg-image",
-		};
-		if (!isFeature) {
-			imageAttributes["loading"] = "lazy";
-			imageAttributes["sizes"]  = "auto";
-		}
-		return image.generateHTML(metadata, imageAttributes);
-	});
-
-	eleventyConfig.on("eleventy.before", ({}) => {
+	eleventyConfig.on("eleventy.before", ({ }) => {
 		const css = fs.readFileSync("style/main.css", "utf8");
 		const css_dest = path.join("public", "css", "main.css");
 		const css_map = `${css_dest}.map`
-		postcss([cssnano({preset: defaultPreset()})])
+		postcss([cssnano({ preset: defaultPreset() })])
 			.use(atImport({
 				path: ["./node_modules",
 					"./style"
@@ -216,14 +154,14 @@ export default async function(eleventyConfig) {
 			}).then((result) => {
 				if (fs.existsSync(css_dest)) {
 					const current_contents = fs.readFileSync(css_dest);
-					if(current_contents != result.css) {
+					if (current_contents != result.css) {
 						console.log("changed css");
 						fs.writeFileSync(css_dest, result.css);
 					}
 				}
 				if (fs.existsSync(css_map)) {
 					const current_contents = fs.readFileSync(css_map);
-					if(current_contents != result.map.toString()) {
+					if (current_contents != result.map.toString()) {
 						console.log("changed map");
 						fs.writeFileSync(css_map, result.map.toString());
 					}
@@ -231,9 +169,43 @@ export default async function(eleventyConfig) {
 			});
 	});
 
-	eleventyConfig.addTransform("critical-css", async function(content) {
+	eleventyConfig.addTransform("image-gallery", function (content) {
+		if (this.page.outputFileExtension != "html") {
+			return content;
+		}
+		const $ = cheerio.load(content, {}, true);
+		$("div.kg-gallery-row").each((index, div) => {
+			let pictures = [];
+			let totalAspect = 0;
+			$(div).find('picture').each((index, picture) => {
+				const img = $(picture).find('img').first();
+				const aspect = parseFloat(img.attr('width')) / parseFloat(img.attr('height'));
+				pictures.push({
+					picture,
+					aspect
+				});
+				$(picture).wrapAll(`<div class="kg-gallery-image" style="flex: ${aspect} 1 0%;"></div>`)
+				totalAspect += aspect;
+			});
+			pictures.forEach(({picture, aspect}) => {
+				const widthRatio = aspect / totalAspect;
+				const sizes = `auto, (min-width: 1380px) calc((1200px - (1.2rem * ${pictures.length - 1})) * ${widthRatio}), (min-width: 850) calc((94vw - (1.2rem * ${pictures.length - 1})) * ${widthRatio}), calc((88vw - (1.2rem * ${pictures.length - 1})) * ${widthRatio})`
+				$(picture).find('img, source').attr('sizes', sizes);
+			});
+		});
+		$("div.kg-gallery-container").each((index, element) => {
+			$(element).children().remove('p');
+		});
+		return $.html();
+	});
+
+
+	eleventyConfig.addPlugin(tinyHTML);
+	eleventyConfig.addPlugin(EleventyVitePlugin);
+
+	eleventyConfig.addTransform("critical-css", async function (content) {
 		process.setMaxListeners(20);
-		if(this.page.outputFileExtension != "html") {
+		if (this.page.outputFileExtension != "html") {
 			return content;
 		}
 		const result = await generate({

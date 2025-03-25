@@ -1,0 +1,8 @@
+{%- if feature_image %}
+    <figure class="post-content-image kg-width-wide">
+        <img src="{% relativePath feature_image %}" alt="{{ feature_image_alt }}" eleventy:widths="300,600,900,1200,auto" eleventy:formats="avif,webp,auto" sizes="(min-width: 1380px) 1200px, (min-width: 980px) calc(73.42vw + 201px)" eleventy:pictureattr:class="kg-image" decoding="async">
+        {%- if feature_image_caption %}
+            <figcaption>{{feature_image_caption}}</figcaption>
+        {%- endif %}
+    </figure>
+{% endif %}

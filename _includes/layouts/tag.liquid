@@ -1,0 +1,26 @@
+---
+layout: layouts/default.liquid
+collection: "post"
+singular: "post"
+plural: "posts"
+---
+{% assign posts = collections[collection] %}
+<header class="page-head">
+  <h1 class="page-head-title">{{ name }}</h1>
+  <p class="page-head-description">
+    {%- if description %}
+      {{ description }}
+    {%- else %}
+      A collection of {{ posts.length }}{% if posts.length == 0 or posts.length > 1 %}
+        {{ plural }}
+      {% else %}
+        {{ singular }}{% endif %}
+    {%- endif %}
+  </p>
+</header>
+
+<div class="post-feed gh-feed">
+  {%- for post in posts %}
+    {%- include "partials/post-card.liquid" %}
+  {%- endfor %}
+</div>

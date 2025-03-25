@@ -1,0 +1,10 @@
+<article class="post-card {% if large %}post-card-large{% endif %} {{post.data.post_class}}">
+    <a class="post-card-link" href="{{post.url}}">
+        {%- if post.data.feature_image %}
+            <img src="{% relativePath post.data.feature_image, post %}" alt="{{ post.data.title }}" eleventy:widths="300,600,900,1200,auto" eleventy:formats="avif,webp,auto", sizes="(min-width: 701px) {% if large %}94vw, 88vw{% else %}calc(94vw / 2){% endif %}">
+        {%- endif %}
+        <div class="post-card-content">
+            <h2 class="post-card-title">{{post.data.title}}</h2>
+        </div>
+    </a>
+</article>

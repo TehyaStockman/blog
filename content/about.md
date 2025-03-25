@@ -2,7 +2,7 @@
 eleventyNavigation:
   key: About
   order: 3
-layout: layouts/post.njk
+layout: layouts/page.liquid
 title: About
 ---
 

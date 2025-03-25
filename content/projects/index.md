@@ -1,7 +1,9 @@
 ---
 title: Projects
-layout: "layouts/list_post.njk"
-postCollection: "project"
+layout: "layouts/tag.liquid"
+collection: "project"
+singular: "project"
+plural: "projects"
 eleventyNavigation:
   key: Projects
   order: 2

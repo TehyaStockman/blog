@@ -1,0 +1,16 @@
+---
+layout: layouts/default.liquid
+---
+{%- if page.url == "/" %}
+  {%- if metadata.description %}
+    <header class="page-head">
+      <h2 class="page-head-title">{{ metadata.description }}</h2>
+    </header>
+  {%- endif %}
+{%- endif %}
+
+<div class="post-feed gh-feed">
+  {%- for post in collections.post reversed %}
+    {%- include "partials/post-card.liquid" %}
+  {%- endfor %}
+</div>
