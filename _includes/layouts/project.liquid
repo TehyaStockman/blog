@@ -11,7 +11,7 @@ feature_image_alt: title
   {%- if show_title_and_feature_image %}
     <header class="post-content-header gh-canvas">
       <h1 class="post-content-title">{{ title }}</h1>
-      {% include "partials/feature-image.liquid" %}
+      {% comment %} {% include "partials/feature-image.liquid" %} {% endcomment %}
     </header>
   {% endif %}
 
@@ -21,7 +21,7 @@ feature_image_alt: title
   </div>
 </article>
 
-<div class="post-feed gh-feed">
+<div class="post-feed gh-feed gh-content">
   {%- for post in collections[collection] %}
     {%- include "partials/post-card.liquid" %}
   {%- endfor %}

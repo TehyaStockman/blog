@@ -2,4 +2,13 @@
   rel="icon"
   href="{{metadata.favicon}}"
   type="image/png">
-<link rel="canonical" href="{{metadat.url}}{{page.url}}">
+<link rel="canonical" href="{{ sharing.canonical }}">
+
+<meta property="og:site_name" content="{{ metadata.title }}">
+<meta property="og:type" content="{{ sharing.type }}">
+<meta property="og:title" content="{{ sharing.title }}">
+<meta property="og:description" content="{{ sharing.description }}">
+<meta property="og:image" content="{{ sharing.image.url }}">
+<meta property="og:image:width" content="{{ sharing.image.width }}">
+<meta property="og:image:height" content="{{ sharing.image.height }}">
+<meta property="og:image:type" content="image/jpeg">

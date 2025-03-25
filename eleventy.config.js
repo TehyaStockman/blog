@@ -58,6 +58,14 @@ export default async function (eleventyConfig) {
 
 	eleventyConfig.addPlugin(eleventyImageTransformPlugin, {
 		outputDir: "_site/img",
+		widths: ["150", "300", "600", "900", "1200", "auto"],
+		formats: ["webp", "avif", "jpeg"],
+		htmlOptions: {
+			imgAttributes: {
+				loading: "lazy",
+				decosing: "async"
+			}
+		}
 	})
 
 	eleventyConfig.addPlugin(feedPlugin, {
@@ -97,6 +105,8 @@ export default async function (eleventyConfig) {
 	eleventyConfig.addShortcode("currentBuildDate", () => {
 		return (new Date()).toISOString();
 	});
+
+	eleventyConfig.addShortcode("join", path.join);
 
 	eleventyConfig.addPairedShortcode("gallery", function (content, caption = "") {
 		var figure_classes = "kg-card kg-gallery-card kg-width-wide";
@@ -191,7 +201,7 @@ export default async function (eleventyConfig) {
 
 
 	eleventyConfig.addPlugin(tinyHTML);
-	// eleventyConfig.addPlugin(EleventyVitePlugin);
+	eleventyConfig.addPlugin(EleventyVitePlugin);
 
 	eleventyConfig.addTransform("critical-css", async function (content) {
 		process.setMaxListeners(20);

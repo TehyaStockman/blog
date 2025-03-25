@@ -1,8 +1,8 @@
 export default {
 	title: "Toby's Blog",
-	url: "https://shapins.ky/",
+	url: "http://localhost:3000/",
 	language: "en",
-	description: "I am writing about my experiences as a naval navel-gazer.",
+	description: "I am writing about the things I learn and do.",
 	author: {
 		name: "Tobias shapinsky",
 		email: "tobias@shapins.ky",

@@ -43,30 +43,30 @@ secondary_navigation: false
                 {% endif %}
               </a>
             </div>
-            <button
-              class="gh-search gh-icon-btn"
-              aria-label="Search this site"
-              data-ghost-search>{% include "icons/search.liquid" %}</button>
+            {% comment %} <button
+                            class="gh-search gh-icon-btn"
+                            aria-label="Search this site"
+                          data-ghost-search>{% include "icons/search.liquid" %}</button> {% endcomment %}
             <button class="gh-burger"></button>
           </div>
 
           <nav class="gh-head-menu">
             {%- include "partials/navigation.liquid" %}
-            {%- if navigation_layout == "stacked" %}
+            {% comment %} {%- if navigation_layout == "stacked" %}
               <button
                 class="gh-search gh-icon-btn"
                 aria-label="Search this site"
                 data-ghost-search>{% include "icons/search.liquid" %}</button>
-            {%- endif %}
+            {%- endif %} {% endcomment %}
           </nav>
 
           <div class="gh-head-actions">
-            {%- if not navigation_layout == "stacked" %}
+            {% comment %} {%- if not navigation_layout == "stacked" %}
               <button
                 class="gh-search gh-icon-btn"
                 aria-label="Search this site"
                 data-ghost-search>{% include "icons/search.liquid" %}</button>
-            {%- endif %}
+            {%- endif %} {% endcomment %}
           </div>
         </div>
       </header>
@@ -81,16 +81,22 @@ secondary_navigation: false
             {{ metadata.copyright }}
           </div>
           {% comment %} {%- if metadata.secondary_navigation %}
-                                                                                                                                                                                    <nav class="gh-foot-menu">
-                                                                                                                                                                                      {# {{ navigation type="secondary" }} #}
-                                                                                                                                                                                    </nav>
-                                                                                                                                                      {%- endif %} {% endcomment %}
+                                                                                                                                                                                                                        <nav class="gh-foot-menu">
+                                                                                                                                                                                                                          {# {{ navigation type="secondary" }} #}
+                                                                                                                                                                                                                        </nav>
+                                                                                                                                                                                    {%- endif %} {% endcomment %}
           <div class="gh-powered-by">
             <a
-              href="https://ghost.org/"
-              target="_blank"
-              rel="noopener">Powered by Ghost</a>
-          </div>
+            href="https://www.11ty.dev/"
+            target="_blank"
+            rel="noopener">Built with {{ eleventy.generator }}</a>
+          </div>  
+          <div class="gh-powered-by">
+            <a
+            href="https://github.com/TryGhost/London"
+            target="_blank"
+            rel="noopener">Style adapted from London</a>
+          </div>  
         </div>
       </footer>
 
