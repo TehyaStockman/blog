@@ -191,6 +191,18 @@ export default async function (eleventyConfig) {
 				const widthRatio = aspect / totalAspect;
 				const sizes = `auto, (min-width: 1380px) calc((1200px - (1.2rem * ${pictures.length - 1})) * ${widthRatio}), (min-width: 850) calc((94vw - (1.2rem * ${pictures.length - 1})) * ${widthRatio}), calc((88vw - (1.2rem * ${pictures.length - 1})) * ${widthRatio})`
 				$(picture).find('img, source').attr('sizes', sizes);
+				const img = $(picture).find('img').first();
+				const srcset = $(img).attr('srcset');
+				const src = srcset.split(",").map((value) => {
+					let [src, width] =  value.trim().split(" ");
+					return {
+						src, 
+						width: parseInt(width.substring(0, width.length - 1))
+					};
+				}).sort((a, b) => {
+					return b.width - a.width;
+				})[0];
+				$(img).attr(src, src.src);
 			});
 		});
 		$("div.kg-gallery-container").each((index, element) => {
