@@ -1,6 +1,6 @@
 export default {
 	title: "Toby's Blog",
-	url: "http://localhost:3000/",
+	url: "http://shapins.ky/",
 	language: "en",
 	description: "I am writing about the things I learn and do.",
 	author: {
